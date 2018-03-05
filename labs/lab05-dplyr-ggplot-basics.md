@@ -29,8 +29,47 @@ Use the first hour of the lab to get as far as possible with the material associ
 
 While you follow this lab, you may want to open these cheat sheets:
 
--   [dplyr cheatsheet](../cheat-sheets/data-transformation-cheatsheet.pdf)
--   [ggplot2 cheatsheet](../cheat-sheets/ggplot2-cheatsheet-2.1.pdf)
+-   [dplyr cheatsheet](../cheatsheets/data-transformation-cheatsheet.pdf)
+-   [ggplot2 cheatsheet](../cheatsheets/ggplot2-cheatsheet-2.1.pdf)
+
+------------------------------------------------------------------------
+
+Filestructure and Shell Commands
+--------------------------------
+
+We want you to keep practicing with the command line (e.g. Mac Terminal, Gitbash). Follow the steps listed below to create the necessary subdirectories like those depicted in this scheme:
+
+        lab05/
+          README.md
+          data/
+            nba2017-players.csv
+          report/
+            lab05.Rmd
+            lab05.html
+          images/
+            ... # all the plot files
+
+-   Open a command line interface (e.g. Terminal or GitBash)
+-   Change your working directory to a location where you will store all the materials for this lab
+-   Use `mkdir` to create a directory `lab05` for the lab materials
+-   Use `cd` to change directory to (i.e. move inside) `lab05`
+-   Create other subdirectories: `data`, `report`, `images`
+-   Use `ls` to list the contents of `lab05` and confirm that you have all the subdirectories.
+-   Use `touch` to create an empty `README.md` text file
+-   Use a text editor (e.g. the one in RStudio) to open the `README.md` file, and then add a brief description of today's lab, using markdown syntax.
+-   Change directory to the `data/` folder.
+-   Download the data file with the command `curl`, and the `-O` option (letter O)
+
+    ``` bash
+    curl -O https://raw.githubusercontent.com/ucb-stat133/stat133-spring-2018/master/data/nba2017-players.csv
+    ```
+
+-   Use `ls` to confirm that the csv file is in `data/`
+-   Use *word count* `wc` to count the lines of the csv file
+-   Take a peek at the first rows of the csv file with `head`
+-   Take a peek at the last 5 rows of the csv file with `tail`
+
+------------------------------------------------------------------------
 
 ### Installing packages
 
@@ -53,19 +92,22 @@ library(ggplot2)
 
 **About loading packages:** Another rule to keep in mind is to always load any required packages at the very top of your script files (`.R` or `.Rmd` or `.Rnw` files). Avoid calling the `library()` function in the middle of a script. Instead, load all the packages before anything else.
 
+### Path for Images
+
+The other important specification to include in your Rmd file is a global chunk option to specify the location of plots and graphics. This is done by setting the `fig.path` argument inside the `knitr::opts_chunk$set()` function.
+
+![](lab05-images/knitr-fig-path.png)
+
+If you don't specify `fig.path`, `"knitr"` will create a default directory to store all the plots produced when knitting an Rmd file. This time, however, we want to have more control over where things are placed. Because you already have a folder `images/` as part of the filestructure, this is where we want `"knitr"` to save all the generated graphics.
+
+Notice the use of a relative path `fig.path = '../images/'`. This is because your Rmd file should be inside the folder `report/`, but the folder `images/` is outside `report/` (i.e. in the same parent directory of `report/`).
+
 ------------------------------------------------------------------------
 
 NBA Players Data
 ----------------
 
-The data file for this lab is the same you used last week: `nba2017-players.csv`, which is located in the `data/` folder of the course github repository. I assume that you already downloaded a copy of the csv file to your computer. If that is not the case, here's one option to get your own copy:
-
-``` r
-# download RData file into your working directory
-github <- "https://github.com/ucb-stat133/stat133-spring-2018/raw/master/"
-csv <- "data/nba2017-players.csv"
-download.file(url = paste0(github, csv), destfile = 'nba2017-players.csv')
-```
+The data file for this lab is the same you used last week: `nba2017-players.csv`.
 
 To import the data in R you can use the base function `read.csv()`, or you can also use `read_csv()` from the package `"readr"`:
 
@@ -108,23 +150,17 @@ Filtering, slicing, and selecting
 ``` r
 # first three rows
 three_rows <- slice(dat, 1:3)
-```
-
-    ## Warning: package 'bindrcpp' was built under R version 3.3.2
-
-``` r
 three_rows
 ```
 
     ## # A tibble: 3 x 15
-    ##          player  team position height weight   age experience
-    ##           <chr> <chr>    <chr>  <int>  <int> <int>      <int>
-    ## 1    Al Horford   BOS        C     82    245    30          9
-    ## 2  Amir Johnson   BOS       PF     81    240    29         11
-    ## 3 Avery Bradley   BOS       SG     74    180    26          6
-    ## # ... with 8 more variables: college <chr>, salary <dbl>, games <int>,
-    ## #   minutes <int>, points <int>, points3 <int>, points2 <int>,
-    ## #   points1 <int>
+    ##   player   team  position height weight   age experience college    salary
+    ##   <chr>    <chr> <chr>     <int>  <int> <int>      <int> <chr>       <dbl>
+    ## 1 Al Horf… BOS   C            82    245    30          9 Universit… 2.65e⁷
+    ## 2 Amir Jo… BOS   PF           81    240    29         11 ""         1.20e⁷
+    ## 3 Avery B… BOS   SG           74    180    26          6 Universit… 8.27e⁶
+    ## # ... with 6 more variables: games <int>, minutes <int>, points <int>,
+    ## #   points3 <int>, points2 <int>, points1 <int>
 
 `filter()` allows you to select rows by condition:
 
@@ -190,13 +226,13 @@ gsw
 ```
 
     ## # A tibble: 5 x 3
-    ##           player height weight
-    ##            <chr>  <int>  <int>
+    ##   player         height weight
+    ##   <chr>           <int>  <int>
     ## 1 Draymond Green     79    230
-    ## 2   Kevin Durant     81    240
-    ## 3  Klay Thompson     79    215
-    ## 4  Stephen Curry     75    190
-    ## 5  Zaza Pachulia     83    270
+    ## 2 Kevin Durant       81    240
+    ## 3 Klay Thompson      79    215
+    ## 4 Stephen Curry      75    190
+    ## 5 Zaza Pachulia      83    270
 
 Now, let's use `mutate()` to (temporarily) add a column with the ratio `height / weight`:
 
@@ -205,13 +241,13 @@ mutate(gsw, height / weight)
 ```
 
     ## # A tibble: 5 x 4
-    ##           player height weight `height/weight`
-    ##            <chr>  <int>  <int>           <dbl>
-    ## 1 Draymond Green     79    230       0.3434783
-    ## 2   Kevin Durant     81    240       0.3375000
-    ## 3  Klay Thompson     79    215       0.3674419
-    ## 4  Stephen Curry     75    190       0.3947368
-    ## 5  Zaza Pachulia     83    270       0.3074074
+    ##   player         height weight `height/weight`
+    ##   <chr>           <int>  <int>           <dbl>
+    ## 1 Draymond Green     79    230           0.343
+    ## 2 Kevin Durant       81    240           0.338
+    ## 3 Klay Thompson      79    215           0.367
+    ## 4 Stephen Curry      75    190           0.395
+    ## 5 Zaza Pachulia      83    270           0.307
 
 You can also give a new name, like: `ht_wt = height / weight`:
 
@@ -220,13 +256,13 @@ mutate(gsw, ht_wt = height / weight)
 ```
 
     ## # A tibble: 5 x 4
-    ##           player height weight     ht_wt
-    ##            <chr>  <int>  <int>     <dbl>
-    ## 1 Draymond Green     79    230 0.3434783
-    ## 2   Kevin Durant     81    240 0.3375000
-    ## 3  Klay Thompson     79    215 0.3674419
-    ## 4  Stephen Curry     75    190 0.3947368
-    ## 5  Zaza Pachulia     83    270 0.3074074
+    ##   player         height weight ht_wt
+    ##   <chr>           <int>  <int> <dbl>
+    ## 1 Draymond Green     79    230 0.343
+    ## 2 Kevin Durant       81    240 0.338
+    ## 3 Klay Thompson      79    215 0.367
+    ## 4 Stephen Curry      75    190 0.395
+    ## 5 Zaza Pachulia      83    270 0.307
 
 In order to permanently change the data, you need to assign the changes to an object:
 
@@ -236,13 +272,13 @@ gsw2
 ```
 
     ## # A tibble: 5 x 5
-    ##           player height weight   ht_m   wt_kg
-    ##            <chr>  <int>  <int>  <dbl>   <dbl>
-    ## 1 Draymond Green     79    230 2.0066 104.328
-    ## 2   Kevin Durant     81    240 2.0574 108.864
-    ## 3  Klay Thompson     79    215 2.0066  97.524
-    ## 4  Stephen Curry     75    190 1.9050  86.184
-    ## 5  Zaza Pachulia     83    270 2.1082 122.472
+    ##   player         height weight  ht_m wt_kg
+    ##   <chr>           <int>  <int> <dbl> <dbl>
+    ## 1 Draymond Green     79    230  2.01 104  
+    ## 2 Kevin Durant       81    240  2.06 109  
+    ## 3 Klay Thompson      79    215  2.01  97.5
+    ## 4 Stephen Curry      75    190  1.90  86.2
+    ## 5 Zaza Pachulia      83    270  2.11 122
 
 Reordering rows: `arrange()`
 ----------------------------
@@ -255,15 +291,15 @@ arrange(gsw, height)
 ```
 
     ## # A tibble: 5 x 3
-    ##           player height weight
-    ##            <chr>  <int>  <int>
-    ## 1  Stephen Curry     75    190
+    ##   player         height weight
+    ##   <chr>           <int>  <int>
+    ## 1 Stephen Curry      75    190
     ## 2 Draymond Green     79    230
-    ## 3  Klay Thompson     79    215
-    ## 4   Kevin Durant     81    240
-    ## 5  Zaza Pachulia     83    270
+    ## 3 Klay Thompson      79    215
+    ## 4 Kevin Durant       81    240
+    ## 5 Zaza Pachulia      83    270
 
-By default `arrange()` sorts rows in increasing. To arrande rows in descending order you need to use the auxiliary function `desc()`.
+By default `arrange()` sorts rows in increasing order. To arrange rows in descending order you need to use the auxiliary function `desc()`.
 
 ``` r
 # order rows by height (decreasingly)
@@ -271,13 +307,13 @@ arrange(gsw, desc(height))
 ```
 
     ## # A tibble: 5 x 3
-    ##           player height weight
-    ##            <chr>  <int>  <int>
-    ## 1  Zaza Pachulia     83    270
-    ## 2   Kevin Durant     81    240
+    ##   player         height weight
+    ##   <chr>           <int>  <int>
+    ## 1 Zaza Pachulia      83    270
+    ## 2 Kevin Durant       81    240
     ## 3 Draymond Green     79    230
-    ## 4  Klay Thompson     79    215
-    ## 5  Stephen Curry     75    190
+    ## 4 Klay Thompson      79    215
+    ## 5 Stephen Curry      75    190
 
 ``` r
 # order rows by height, and then weight
@@ -285,13 +321,13 @@ arrange(gsw, height, weight)
 ```
 
     ## # A tibble: 5 x 3
-    ##           player height weight
-    ##            <chr>  <int>  <int>
-    ## 1  Stephen Curry     75    190
-    ## 2  Klay Thompson     79    215
+    ##   player         height weight
+    ##   <chr>           <int>  <int>
+    ## 1 Stephen Curry      75    190
+    ## 2 Klay Thompson      79    215
     ## 3 Draymond Green     79    230
-    ## 4   Kevin Durant     81    240
-    ## 5  Zaza Pachulia     83    270
+    ## 4 Kevin Durant       81    240
+    ## 5 Zaza Pachulia      83    270
 
 ------------------------------------------------------------------------
 
@@ -368,7 +404,7 @@ c(min = min(dat$salary),
 Grouped operations
 ------------------
 
-To actually appreciate the power of `summarise()`, we need to introduce the other major basic verb in `"dplyr"`: `group_by()`. This is the function that allows you to do perform data aggregations, or *grouped operations*.
+To actually appreciate the power of `summarise()`, we need to introduce the other major basic verb in `"dplyr"`: `group_by()`. This is the function that allows you to perform data aggregations, or *grouped operations*.
 
 Let's see the combination of `summarise()` and `group_by()` to calculate the average salary by team:
 
@@ -381,18 +417,18 @@ summarise(
 ```
 
     ## # A tibble: 30 x 2
-    ##     team avg_salary
+    ##    team  avg_salary
     ##    <chr>      <dbl>
-    ##  1   ATL    6491892
-    ##  2   BOS    6127673
-    ##  3   BRK    4363414
-    ##  4   CHI    6138459
-    ##  5   CHO    6683086
-    ##  6   CLE    8386014
-    ##  7   DAL    6139880
-    ##  8   DEN    5225533
-    ##  9   DET    6871594
-    ## 10   GSW    6579394
+    ##  1 ATL      6491892
+    ##  2 BOS      6127673
+    ##  3 BRK      4363414
+    ##  4 CHI      6138459
+    ##  5 CHO      6683086
+    ##  6 CLE      8386014
+    ##  7 DAL      6139880
+    ##  8 DEN      5225533
+    ##  9 DET      6871594
+    ## 10 GSW      6579394
     ## # ... with 20 more rows
 
 Here's a similar example with the average salary by position:
@@ -407,12 +443,12 @@ summarise(
 
     ## # A tibble: 5 x 2
     ##   position avg_salary
-    ##      <chr>      <dbl>
-    ## 1        C    6987682
-    ## 2       PF    5890363
-    ## 3       PG    6069029
-    ## 4       SF    6513374
-    ## 5       SG    5535260
+    ##   <chr>         <dbl>
+    ## 1 C           6987682
+    ## 2 PF          5890363
+    ## 3 PG          6069029
+    ## 4 SF          6513374
+    ## 5 SG          5535260
 
 Here's a more fancy example: average weight and height, by position, displayed in desceding order by average height:
 
@@ -428,12 +464,12 @@ arrange(
 
     ## # A tibble: 5 x 3
     ##   position avg_height avg_weight
-    ##      <chr>      <dbl>      <dbl>
-    ## 1        C   83.25843   250.7978
-    ## 2       PF   81.50562   235.8539
-    ## 3       SF   79.63855   220.4699
-    ## 4       SG   77.02105   204.7684
-    ## 5       PG   74.30588   188.5765
+    ##   <chr>         <dbl>      <dbl>
+    ## 1 C              83.3        251
+    ## 2 PF             81.5        236
+    ## 3 SF             79.6        220
+    ## 4 SG             77.0        205
+    ## 5 PG             74.3        189
 
 ### Your turn:
 
@@ -450,7 +486,7 @@ arrange(
 ------------------------------------------------------------------------
 
 First contact with `ggplot()`
------------------------------
+=============================
 
 The package `"ggplot2"` is probably the most popular package in R to create *beautiful* static graphics. Comapred to the functions in the base package `"graphcics"`, the package `"ggplot2`" follows a somewhat different philosophy, and it tries to be more consistent and modular as possible.
 
@@ -487,7 +523,17 @@ ggplot(data = dat, aes(x = points, y = salary)) +
   geom_point()
 ```
 
-Say you want to color code the points in terms of the `position`
+### Label your chunks!
+
+When including code for plots and graphics, we strongly recommend that you create an individual code chunk for each plot, and that you **give a label** to that chunk. This is illustrated in the following screenshot.
+
+![](lab05-images/named-chunk.png)
+
+Note that the code chunk has a label `scatterplot1`; moreover, the code is exclusively decidated to this plot. Why should you care? Because when `"knitr"` creates the file of the plot, it will use the chunk label for the graph. So it's better to give meaningful names to those chunks containing graphics.
+
+### Adding color
+
+Say you want to color code the points in terms of `position`
 
 ``` r
 # colored scatterplot 
@@ -507,7 +553,7 @@ ggplot(data = dat, aes(x = points, y = salary)) +
 
 ![](lab05-images/unnamed-chunk-22-1.png)
 
-To add some transparency effect to the dots, you can use the `alpha` parameter
+To add some transparency effect to the dots, you can use the `alpha` parameter.
 
 ``` r
 # sized and colored scatterplot 
@@ -521,15 +567,17 @@ Notice that `alpha` was specified outside `aes()`. This is because we are not us
 
 ### Your turn:
 
--   If you didn't before, now it's time to open the [ggplot2 cheatsheet](../cheat-sheets/ggplot2-cheatsheet-2.1.pdf)
--   Use the data frame `gsw` to make a scatterplot of `height` and `weight`
--   Find out how to make another scatterplot of `height` and `weight`, using `geom_text()` to display the names of the players
--   Get a scatter plot of `height` and `weight`, for ALL the warriors, displaying their names with `geom_label()`
--   Get a density plot of `salary` (for all NBA players)
--   Get a histogram of `points2` with binwidth of 50 (for all NBA players)
--   Get a barchart of the `position` frequencies (for all NBA players)
--   Make a scatterplot of `experience` and `salary` of all centers, and use `geom_smooth()` to add a regression line
--   Repeat the same scatterplot of `experience` and `salary` of all centers, but now use `geom_smooth()` to add a loess line
+-   Open the [ggplot2 cheatsheet](../cheatsheets/ggplot2-cheatsheet-2.1.pdf)
+-   Use the data frame `gsw` to make a scatterplot of `height` and `weight`.
+-   Find out how to make another scatterplot of `height` and `weight`, using `geom_text()` to display the names of the players.
+-   Get a scatter plot of `height` and `weight`, for ALL the warriors, displaying their names with `geom_label()`.
+-   Get a density plot of `salary` (for all NBA players).
+-   Get a histogram of `points2` with binwidth of 50 (for all NBA players).
+-   Get a barchart of the `position` frequencies (for all NBA players).
+-   Make a scatterplot of `experience` and `salary` of all Centers, and use `geom_smooth()` to add a regression line.
+-   Repeat the same scatterplot of `experience` and `salary` of all Centers, but now use `geom_smooth()` to add a loess line (i.e. smooth line).
+
+------------------------------------------------------------------------
 
 Faceting
 --------
@@ -578,3 +626,26 @@ ggplot(data = dat, aes(x = points, y = salary)) +
 -   Make scatterplots of `height` and `weight`, with a 2-dimensional density, `geom_density2d()`, faceting by `position`
 -   Make a scatterplot of `experience` and `salary` for the Warriors, but this time add a layer with `theme_bw()` to get a simpler background
 -   Repeat any of the previous plots but now adding a leyer with another theme e.g. `theme_minimal()`, `theme_dark()`, `theme_classic()`
+
+------------------------------------------------------------------------
+
+More shell commands
+-------------------
+
+Now that you have a bunch of images inside the `images/` subdirectory, let's keep practicing some basic commands.
+
+-   Open the terminal.
+-   Move inside the `images/` directory of the lab.
+-   List the contents of this directory.
+-   Now list the contents of the directory in *long format*.
+-   How would you list the contents in long format, by time?
+-   How would you list the contents displaying the results in reverse (alphabetical)? order
+-   Without changing your current directory, create a directory `copies` at the parent level (i.e. `lab05/`).
+-   Copy one of the PNG files to the `copies` folder.
+-   Use the wildcard `*` to copy all the `.png` files in the directory `copies`.
+-   Change to the directory `copies`.
+-   Use the command `mv` to rename some of your PNG files.
+-   Change to the `report/` directory.
+-   From within `report/`, find out how to rename the directory `copies` as `copy-files`.
+-   From within `report/`, delete one or two PNG files in `copy-files`.
+-   From within `report/`, find out how to delete the directory `copy-files`.

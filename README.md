@@ -9,12 +9,23 @@ __Statistics 133: Concepts in Computing with Data__ at UC Berkeley.
 - __Session Dates:__ 01/17/18 - 05/04/18
 - __Code #:__ 30844
 - __Units:__ 3 (more info [here](http://classes.berkeley.edu/content/2018-spring-stat-133-001-lec-001))
-- __Office Hours:__ MWF 1-2pm 309 Evans
+- __Office Hours:__ MW 1-2pm 309 Evans, Fr 2-3pm 344 Evans, 3-4pm 340 Evans
 - __Final:__ Mon May 7, 8-11am (room TBD)
 - __Piazza:__ [piazza.com/berkeley/spring2018/stat133](https://piazza.com/berkeley/spring2018/stat133)
-- __GSIs:__ Office hours of the GSIs will be posted on bCourses (TBA)
+- __GSIs:__ Office hours of the GSIs displayed below.
 You can go to the office hours of __any__ GSI, not just your own.
 
+| GSI          | Room      | Day/Time            |
+|:-------------|:----------|:--------------------|
+| Jin Kweon    | 342 Evans | M Tu 9 - 11am       |
+| Da Xu        | 342 Evans | W 4-6pm, Th 8-9am & 5-6pm |
+| Minchul Shin | 342 Evans | M 10:30am-12:30pm, Th 5-7pm |
+| Ninh Do      | 342 Evans | M 9-11am, Th 8-9am  |
+| Qi Chen      | 342 Evans | M 3-5pm, Tu 8-10am  |
+| Rui Chen     | 426 Evans | W 12-2pm, Th 9-11am |
+
+
+- __Lab Sections:__
 
 | Lab | Date       | Room         | GSI             |
 |-----|------------|--------------|-----------------|

@@ -16,7 +16,7 @@ Gaston Sanchez
 Abalone Data Set
 ----------------
 
-The first data set to consider is the **Abalone Data Set** that is part of the [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/datasets/Abalone)
+The first data set that you will working with is the **Abalone Data Set** that is part of the [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/datasets/Abalone)
 
 The location of the data file is:
 
@@ -42,14 +42,45 @@ abalone <- read.table(url, sep = ",")
 
 ### Getting a Local Copy of the Data
 
-My suggestion when reading datasets from the Web, is to always try to get a local copy of the data file in your machine (as long as you have enough free space to save it in your computer). To do this, you can use the function `download.file()` and specify the url address, and the name of the file that will be created in your computer. For instance, to save the abalone data file in **your working directory**, type the following commands:
+My suggestion when reading datasets from the Web, is to always try to get a local copy of the data file in your machine (as long as you have enough free space to save it in your computer). To do this, you can use the function `download.file()` and specify the url address, and the name of the file that will be created in your computer. For instance, to save the abalone data file in **your working directory**, type the following commands directly on the R console:
 
 ``` r
-# download copy
+# do NOT include this code in your Rmd file
+# download copy to your working directory
 origin <- 'http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data'
 destination <- 'abalone.data'
 download.file(origin, destination)
 ```
+
+Some Bash Commands
+------------------
+
+Before describing some of the reading-table functions in R, let's practice some basic bash commands to inspect the downloaded data file.
+
+-   For those of you using Gitbash, go to your browser and open a tab to get the *Linux Man Pages Online* available in the website: <http://man.he.net/>
+
+-   Open the terminal (e.g. Mac terminal or Gitbash) and change directories to the folder that contains the downloaded file `abalone.data`.
+
+-   Use the `file` command to know what type of file is `abalone.data`.
+
+-   Use the *word count* command `wc` to obtain information about: 1) newline count, 2) word count, and 3) byte count, of the `abalone.data` file.
+
+-   See the `man` documentation of `wc` and learn what option you should use to otabin only the number of lines in `abalone.data`.
+
+-   Use `head` to take a peek at the first lines (10 lines by default) of `abalone.data`
+
+-   See the `man` documentation of `head` and learn what option you should use to display only the first 5 files in `abalone.data`.
+
+-   Use `tail` to take a peek at the last lines (10 lines by default) of `abalone.data`
+
+-   See the `man` documentation of `tail` and learn what option you should use to display only the last 3 files in `abalone.data`.
+
+-   Use the `less` command to look at the contents of `abalone.data` (this command opens a *paginator* so you can move up and down the contents of the file).
+
+------------------------------------------------------------------------
+
+Basic Importing
+---------------
 
 Now that you have a local copy of the dataset, you can read it in R with `read.table()` like so:
 
@@ -79,11 +110,11 @@ str(abalone, vec.len = 1)
 
 So far we have been able to read the data file in R. But we are missing a few things. First, we don't have names for the columns. Second, it would be nice if we could specify the data types of each column instead of letting R guess how to handle each data type.
 
-According to the description of the Abalone data set, the columns represent these variables:
+According to the description of the Abalone data set, we can assign the following data types to each of the columns as:
 
 | Name           | Data Type  |
 |----------------|------------|
-| Sex            | nominal    |
+| Sex            | character  |
 | Length         | continuous |
 | Diameter       | continuous |
 | Height         | continuous |
@@ -97,7 +128,7 @@ Let's create a vector of columns names, and another vector of data types:
 
 ``` r
 # vector of column names
-col_names <- c(
+column_names <- c(
     'sex',
     'length',
     'diameter',
@@ -110,28 +141,28 @@ col_names <- c(
 )
 
 # vector of data types (for each column)
-col_types <- c(
-    'factor',
-    'numeric',
-    'numeric',
-    'numeric',
-    'numeric',
-    'numeric',
-    'numeric',
-    'numeric',
+column_types <- c(
+    'character',
+    'real',
+    'real',
+    'real',
+    'real',
+    'real',
+    'real',
+    'real',
     'integer'   
 )
 ```
 
-Because the variable `sex` is supposed to be in nominal scale (i.e. it is a categorical variables), we can choose an R `factor` for it. Also note that the variable `rings` is supposed to be integers, therefore we can choose an `integer` vector for this column.
+Optionally, we could also specify a type "factor" for the variable `sex` since this is supposed to be in nominal scale (i.e. it is a categorical variable). Also note that the variable `rings` is supposed to be integers, therefore we can choose an `integer` vector for this column.
 
 Now we can re-read the table in a more complete (and usually more efficient) way:
 
 ``` r
 abalone <- read.table(
     'abalone.data',
-    col.names = col_names,
-    colClasses = col_types,
+    col.names = column_names,
+    colClasses = column_types,
     sep = ","
 )
 
@@ -141,8 +172,9 @@ str(abalone, vec.len = 1)
 
 ### Your turn
 
--   Read the Abalone data with the `read.csv()` function
--   Look at the data description
+-   Read the Abalone data with the `read.csv()` function.
+-   Use the inputs `col.names` and `colClasses` to specify column names and their data types.
+-   Look at the data description in the following link:
 
 <http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.names> and confirm the following statistics:
 
@@ -151,6 +183,26 @@ str(abalone, vec.len = 1)
     Max    0.815  0.650 1.130   2.826    1.488    0.760    1.005       29
     Mean   0.524  0.408 0.140   0.829    0.359    0.181    0.239    9.934
     SD     0.120  0.099 0.042   0.490    0.222    0.110    0.139    3.224
+
+Import Abalone data with `read_csv()`
+-------------------------------------
+
+In addition to the built-in functions for importing tables in R, there is also the set of functions from the R package `"readr"`:
+
+-   `read_delim()`
+-   `read_csv()`
+-   `read_tsv()`
+-   `read_csv2()`
+-   `read_fwf()`
+-   `read_table()`
+
+Take a look at this post for some examples:
+
+<https://blog.rstudio.com/2015/04/09/readr-0-1-0/>
+
+-   Use `read_csv()` to import the abalone data set.
+-   Use the argument `col_names` to specify the column names.
+-   Learn how to use the argument `col_types` to specify the data type for each column.
 
 ------------------------------------------------------------------------
 
@@ -178,37 +230,17 @@ Read the description, and take a look at the data set:
 -   What is the data type of each variable (i.e. column)?
 -   Download a copy of the data to your computer (use `download.file()`) and save it in a file named `bridges.data`
 
-``` r
-# download a copy of the data file
-```
-
 ### Reading the Data
 
 -   Create a vector of column names
 -   Create a vector of column types
--   Use the function `read.table()` to read the data. Name it `bridges`.
-
-``` r
-# vector of column names
-
-
-# vector of column types
-
-
-# reading the data with 'read.table()'
-```
-
-### Using `read.csv()`
-
-Now use the function `read.csv()` to re-read the bridges data
-
-``` r
-# reading the data with 'read.csv()'
-```
+-   Use the function `read.table()` to import the data. Name it `bridges1`.
+-   Use the function `read.csv()` to import the data. Name it `bridges2`.
+-   How would you specify the argument `colClasses` to import just the first five columns? (check the documentation of `?read.table`). Name this data frame `bridges3`.
 
 ### Basic Inspection
 
-Use functions to start examining the `bridges` data frame:
+Use functions to start examining the `bridges1` data frame:
 
 -   `str()`
 -   `summary()`
@@ -219,28 +251,20 @@ Use functions to start examining the `bridges` data frame:
 -   `nrow()`
 -   `ncol()`
 
-``` r
-# your code
-```
-
 ### Optional: Want to do more?
 
 Write R code to find:
 
--   Year of the oldest bridge
+-   Year of the oldest erected bridge
 -   Year of the most recent erected bridge
 -   Frequency of bridges by purpose
 -   Frequency of materials
 -   Average length of the bridges
--   Plot a timeline: year -vs- length
-
-``` r
-# your code
-```
 
 ------------------------------------------------------------------------
 
-### Your turn
+Creating Data Frames
+--------------------
 
 Here's a table with the starting lineup of the Golden State Warriors:
 
